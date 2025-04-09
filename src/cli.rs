@@ -22,7 +22,7 @@ pub(crate) struct Cli {
     pub(crate) filter: String,
 
     /// Exfiltration server destination IP
-    #[arg(short = 'd', long, default_value_t = String::from("2a05:d012:8ef:f66:12d3:23ac:6791:a11f"))]
+    #[arg(short = 'd', long, default_value_t = String::from("192.0.2.100"))]
     pub(crate) dst: String,
 
     /// Exfiltration server destination port

