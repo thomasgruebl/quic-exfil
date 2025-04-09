@@ -1,0 +1,10 @@
+[package]
+name = "quic-exfil"
+version = "1.0.0"
+edition = "2024"
+
+[dependencies]
+clap = { version = "4.5.4", features = ["derive"]}
+etherparse = "0.17.0"
+openssl = "0.10.72"
+rand = "0.9.0"

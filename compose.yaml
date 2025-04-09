@@ -1,0 +1,9 @@
+services:
+  app:
+    image: quicexfil
+    build:
+      context: .
+      dockerfile: Dockerfile
+    deploy:
+      mode: replicated
+      replicas: 16

