@@ -1,6 +1,7 @@
 # quic-exfil
 Covert data exfiltration by mimicking QUIC server-side connection migrations.
 
+![Rust build workflow](https://github.com/thomasgruebl/quic-exfil/blob/main/.github/workflows/rust.yml/badge.svg)
 ![Crates.io](https://img.shields.io/crates/d/quic-exfil?style=plastic)
 ![Libraries.io dependency status for GitHub repo](https://img.shields.io/librariesio/github/thomasgruebl/quic-exfil?style=plastic)
 ![GitHub last commit](https://img.shields.io/github/last-commit/thomasgruebl/quic-exfil?style=plastic)
@@ -26,6 +27,25 @@ QUIC-exfiltration client-side Wireshark trace (without the required server-side 
 * Packet 54622 mimics the PATH_CHALLENGE packet
 
 ![Alt text](sample_pcap.png "pcap_sample")
+
+
+## Dependencies
+
+libpcap
+
+Debian/Ubuntu:
+
+```sh
+sudo apt install libpcap-dev
+```
+
+macOS:
+
+```sh
+brew install libpcap
+```
+
+
 
 
 ## Experimental Testbed
