@@ -29,7 +29,7 @@ ENV OPENSSL_STATIC=1 \
 
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 
-RUN git clone --recursive https://github.com/cloudflare/quiche.git /quiche
+RUN git clone --recursive https://github.com/cloudflare/quiche.git --branch 0.23.2 /quiche
 
 # Setup quiche with modified args.rs and client.rs files
 COPY ./migration/args.rs /quiche/apps/src/
