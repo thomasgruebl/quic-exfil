@@ -39,7 +39,7 @@ COPY ./migration/index.html /quiche/html/
 
 WORKDIR /quiche
 
-RUN /bin/bash -c "source $HOME/.cargo/env && cargo build --release"
+RUN source $HOME/.cargo/env && cargo build --release
 
 # Copy relevant files to build quic-exfil
 WORKDIR /app
@@ -50,4 +50,4 @@ COPY ./images/sample.jpg .
 COPY ./scripts/benign_conn_migr.sh .
 
 RUN sudo chmod +x benign_conn_migr.sh
-RUN /bin/bash -c "source $HOME/.cargo/env && cargo build --release"
+RUN source $HOME/.cargo/env && cargo build --release
