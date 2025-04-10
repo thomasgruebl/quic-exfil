@@ -1,28 +1,26 @@
 //! Copyright thomasgruebl 2025
-//! License: GNU GPLv3 
+//! License: GNU GPLv3
 
 /*
-NOTES:
+Notes:
 
-- Only exfiltrates data when the user browses with QUIC and generates QUIC traffic immediately thereafter
+- Only exfiltrates data when the user browses over QUIC and generates QUIC traffic immediately thereafter
 - This means that the exfiltration throughput of this method depends on the user activity
 - Does not create obvious packet traces like unusual DNS server names when exfiltrating data over DNS
 - Mimics a real QUIC server-side connection migration by sending a data exfiltration packet with an existing DCID (and potentially getting a response from the exfiltration server if required)
-- TLS (or more generally - all TCP-based connections) require a handshake if you want to establish a valid connection -> some detection systems specifically looks for TLS client hellos or TCP SYNs
-- Since QUIC inherently expects such changes in the IP headers of packets, without a preceding handshake -> QUIC-exfil may look less anonmalous than TLS-based exfiltration
+- TLS (or more generally - all TCP-based connections) require a handshake if you want to establish a valid connection -> some fingerprinting tools specifically looks for TLS client hellos or TCP SYNs
+- Since QUIC inherently expects such changes in the IP headers of packets without a preceding handshake -> QUIC-exfil may look less anonmalous than TLS-based exfiltration
 - DNS-based data exfiltration attacks can be very low throughput if they try to avoid raising suspicion + DNS domain names have a size limitation, which is shorter than the max payload length in QUIC
 - Why not establish a legit QUIC connection to exiltrate data? -> Because the "Initial" quic packet + the handshake or the 0-RTT packet are indicators of new connection establishment -> may give away too much information
-    - anomaly detectors and other fingerprinting tools may be specifically targeting handshakes to look for suspicious activity
-- This method minimizes the payload size variance of benign vs malign traffic: meaning that the size of exfiltration payloads is chosen based on the size of previously observed benign traffic and therefore minmizes the chance of statistical outliers
-
-- Stateful treatment of QUIC traffic is possible at firewall level by using the QUIC traffic and version identification Section 4.1 (https://datatracker.ietf.org/doc/html/draft-ietf-quic-manageability-08#name-connection-id-and-rebinding)
+    - anomaly detectors and other fingerprinting tools may specifically target handshakes to look for suspicious activity
+- This method minimizes the variance between benign and malign traffic, meaning that the size of exfiltration payloads and the time deltas between two outgoing QUIC packets are chosen based on previously observed
+     benign traffic. This therefore minmizes the chance of statistical outliers.
+- Stateful treatment of QUIC traffic is possible at firewall level by using the QUIC traffic and version identification (see Section 4.1 https://datatracker.ietf.org/doc/html/draft-ietf-quic-manageability-08#name-connection-id-and-rebinding)
 - However, connection ID might be renegotiated during communication (encrpyted) so firewall/NAT stateful tracking cannot be aware of that
 - Hence, a firewall, which observes a new connection ID, cannot directly infer that a new (potentially illegitimate connection) has been established. It has to assume that the QUIC packet belongs to an existing connection that may have migrated.
-
 - As a result, one can mimic a legitimate connection migration by observing benign QUIC traffic and replaying packets with a modified payload and redirecting them to a data exfiltration server.
-
 - Even Wireshark cannot reliably detect QUIC if the handshake phase has not been observed. Nor can Wireshark dissect a QUIC packet after it has migrated and a change in DCID has occured.
-- Anomaly Detection Features -> QUIC packet lengths, QUIC payload entropy, and QUIC packet time deltas (inter-arrival times)
+- Anomaly Detection Features -> QUIC packet lengths, QUIC connection migration payload length, QUIC outgoing packet time deltas (inter-arrival times), and [QUIC payload entropy]
 */
 
 mod cli;
@@ -149,7 +147,7 @@ fn main() {
 
     let handle2: thread::JoinHandle<_> = thread::spawn(move || {
         loop {
-            dbg!("Help: Check if your VPN is on...");
+            dbg!("Check if your VPN is on...");
 
             // dummy init
             let mut data = P {
@@ -337,7 +335,7 @@ fn main() {
                                     first = false;
                                 } else {
                                     dbg!("Exfiltrating using a normal protected payload packet...");
-                                    quic_packet.remaining_payload = payloads[i-1].clone();
+                                    quic_packet.remaining_payload = payloads[i - 1].clone();
                                 }
 
                                 i += 1;

