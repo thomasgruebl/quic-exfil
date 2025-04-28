@@ -9,7 +9,7 @@ pub enum CustomError {
     ParsingError,
     #[error("Network error occurred")]
     NetworkError,
-    #[error("IO error occurred")]
+    #[error("IO error occurred. Check the filepath to the file you'd like to exfiltrate.")]
     IOError,
     #[error("Unknown error")]
     Unknown,
