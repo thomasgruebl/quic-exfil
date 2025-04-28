@@ -46,7 +46,7 @@ WORKDIR /app
 COPY ./src ./src
 COPY ./Cargo.lock .
 COPY ./Cargo.toml .
-COPY ./images/sample.jpg .
+COPY ./images/sample.jpg ./images/sample.jpg
 COPY ./scripts/benign_conn_migr.sh .
 
 RUN sudo chmod +x benign_conn_migr.sh
