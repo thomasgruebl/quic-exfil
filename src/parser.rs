@@ -105,12 +105,11 @@ impl Packet {
         // https://github.com/JulianSchmid/etherparse
         let packet = match PacketHeaders::from_ethernet_slice(data) {
             Ok(packet) => {
-                println!("link: {:?}", packet.link);
+                /*println!("link: {:?}", packet.link);
                 println!("vlan: {:?}", packet.vlan);
                 println!("net: {:?}", packet.net); // contains ip
                 println!("transport: {:?}", packet.transport);
-                println!("payload: {:?}", packet.payload);
-
+                println!("payload: {:?}", packet.payload);*/
                 //QUICPacket::parse_quic_header(packet.payload.clone());
 
                 Ok(packet)
@@ -265,12 +264,10 @@ impl QUICPacket {
 
         // differentiate between QUIC short and long header packets based on first byte of UDP payload
         let first_byte: &u8 = payload.slice().get(0).unwrap();
-        dbg!("FIRST BYTE:  {} ", *first_byte);
 
         // if high bit in the first byte is set to 1 -> long header, else -> short header (https://www.rfc-editor.org/rfc/rfc8999.html)
         if *first_byte >= 128 {
             // long header
-            dbg!("This is a LONG header");
             quic_packet.header_type = QUICHeaderForm::LongHeader;
 
             // bit 4 & 5 of first byte contain QUIC Packet Type: Initial (0), 0-RTT (1) Handshake (2)
@@ -324,7 +321,6 @@ impl QUICPacket {
             }
         } else {
             // short header
-            dbg!("This is a SHORT header.");
             quic_packet.header_type = QUICHeaderForm::ShortHeader;
 
             // second byte onwards -> Destination Connection ID
@@ -360,8 +356,6 @@ impl QUICPacket {
             quic_packet.remaining_payload = remaining_payload.to_vec();
             quic_packet.remaining_payload_len = remaining_payload.len() as u16;
         }
-
-        dbg!("QUIC PACKET: {}", quic_packet);
 
         quic_packet
     }

