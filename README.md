@@ -19,6 +19,22 @@ Covert data exfiltration by mimicking QUIC server-side connection migrations.
 
 
 
+<!-- TABLE OF CONTENTS -->
+<details open="open">
+  <summary><h2 style="display: inline-block">Table of Contents</h2></summary>
+  <ul>
+  <li><a href="#introduction">Introduction</a></li>
+  <li><a href="#dependencies">Dependencies</a></li>
+  <li><a href="#build">Build</a></li>
+  <li><a href="#run">Run</a></li>
+  <li><a href="#testbed">Experimental Testbed</a></li>
+  <li><a href="#license">License</a></li>
+  </ul>
+</details>
+
+
+## Introduction
+
 Add descr on how to install quiche on the base machine -> and start quiche server to listen for benign connection migrations 
 ./target/release/quiche-server --listen 192.168.100.63:4433 --root html --cert apps/src/bin/cert.crt --key apps/src/bin/cert.key --enable-active-migration
 
@@ -27,7 +43,7 @@ QUIC-exfiltration client-side Wireshark trace (without the required server-side 
 * 2a05:d012:8ef:f66:12d3:23ac:6791:a11f is the exfiltration server IP
 * Packet 54622 mimics the PATH_CHALLENGE packet
 
-![Alt text](sample_pcap.png "pcap_sample")
+![Alt text](images/wireshark.png "pcap_sample")
 
 
 ## Dependencies
@@ -77,7 +93,7 @@ Options:
 
 
 
-## Experimental Testbed
+## Testbed
 
 This section describes the experimental setup used to evaluate `quicexfil` in a Docker-based testbed. The testbed aims to simulate a small enterprise network with multiple desktop machines generating QUIC traffic, and controlled benign connection migrations using Cloudflare's `quiche` library.
 
@@ -135,3 +151,10 @@ In 4 of the 16 containers, the experimental quicexfil tool is manually run to te
 ```
 
 Replace <i>192.0.2.100</i> with the IP address of your exfiltration server.
+
+
+## License
+
+Distributed under the `GNU General Public License v3.0` License. See
+[`LICENSE`](<https://github.com/thomasgruebl/quic-exfil/tree/main/LICENSE>)
+for more information.
