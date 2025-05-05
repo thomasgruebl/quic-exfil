@@ -28,6 +28,7 @@ Covert data exfiltration by mimicking QUIC server-side connection migrations.
   <li><a href="#build">Build</a></li>
   <li><a href="#run">Run</a></li>
   <li><a href="#testbed">Experimental Testbed</a></li>
+  <li><a href="#citation">Citation</a></li>
   <li><a href="#license">License</a></li>
   </ul>
 </details>
@@ -35,13 +36,9 @@ Covert data exfiltration by mimicking QUIC server-side connection migrations.
 
 ## Introduction
 
-Add descr on how to install quiche on the base machine -> and start quiche server to listen for benign connection migrations 
-./target/release/quiche-server --listen 192.168.100.63:4433 --root html --cert apps/src/bin/cert.crt --key apps/src/bin/cert.key --enable-active-migration
+QUIC-Exfil exploits the fact that QUIC allows changes in the underlying IP header, without requiring a new handshake. Therefore, from the perspective of an on-path observer, QUIC connection migrations are difficult to differentiate from potentially malicious traffic. If an adversary monitors the statistical properties of the QUIC traffic within a network, he/she can almost perfectly replicate the observable features of QUIC traffic.
 
-
-QUIC-exfiltration client-side Wireshark trace (without the required server-side acknowledgments)
-* 2a05:d012:8ef:f66:12d3:23ac:6791:a11f is the exfiltration server IP
-* Packet 54622 mimics the PATH_CHALLENGE packet
+The following figure depicts a QUIC-Exfil client-side Wireshark trace (without the required server-side acknowledgments). The second packet in the trace (highlighted in blue) represents the mimicked server-side connection migration to a new destination IP address, followed by various exfiltration payload packets. For illustration purposes, the exfiltration packets retain the same DCID as from the hijacked connection (packet #1). The inter-arrival times (i.e., time deltas) between the outgoing QUIC packets, as well as the payload sizes of the connection migration packet and the "normal" QUIC packets are sampled from a distribution of previously observed packets for the QUIC connection with DCID 29a3de9a9c2063bd0f65b34637234ece7cf876fa. Furthermore, the exfiltration payloads are encrypted using AES-256-CBC to match the entropy of typical encrypted traffic. This reduces the observable differences in legitimate QUIC traffic as compared to malicious exfiltration traffic.
 
 ![Alt text](images/wireshark.png "pcap_sample")
 
@@ -151,6 +148,34 @@ In 4 of the 16 containers, the experimental quicexfil tool is manually run to te
 ```
 
 Replace <i>192.0.2.100</i> with the IP address of your exfiltration server.
+
+
+## Citation
+
+If you intend to use QUIC-Exfil, please cite the following publication:
+
+--preliminary--
+
+```text
+@inproceedings{10.1145/3708821.3733872,
+author = {Gr\"{u}bl, Thomas and Niu, Weijie and von der Assen, Jan and Stiller, Burkhard},
+title = {QUIC-Exfil: Exploiting QUIC’s Server Preferred Address Feature to Perform Data Exfiltration Attacks},
+year = {2025},
+isbn = {798400714108},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3708821.3733872},
+doi = {10.1145/3708821.3733872},
+booktitle = {Proceedings of the 20th ACM Asia Conference on Computer and Communications Security},
+pages = {XXX–YYY},
+numpages = {14},
+keywords = {QUIC, Network Security, Data Exfiltration, Anomaly Detection},
+location = {Hanoi, Vietnam},
+series = {ASIA CCS '25}
+}
+```
+
+
 
 
 ## License
