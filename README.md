@@ -3,7 +3,7 @@ Covert data exfiltration by mimicking QUIC server-side connection migrations.
 
 ![Rust build workflow](https://github.com/thomasgruebl/quic-exfil/actions/workflows/rust.yml/badge.svg)
 ![Docker build workflow](https://github.com/thomasgruebl/quic-exfil/actions/workflows/docker-image.yml/badge.svg)
-![Crates.io](https://img.shields.io/crates/d/quic-exfil?style=plastic)
+![Crates.io Total Downloads](https://img.shields.io/crates/d/quic-exfil?style=plastic)
 ![GitHub Repo stars](https://img.shields.io/github/stars/thomasgruebl/quic-exfil?style=plastic)
 ![GitHub forks](https://img.shields.io/github/forks/thomasgruebl/quic-exfil?style=plastic)
 ![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/thomasgruebl/quic-exfil?style=plastic)
