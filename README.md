@@ -4,20 +4,11 @@ Covert data exfiltration by mimicking QUIC server-side connection migrations.
 ![Rust build workflow](https://github.com/thomasgruebl/quic-exfil/actions/workflows/rust.yml/badge.svg)
 ![Docker build workflow](https://github.com/thomasgruebl/quic-exfil/actions/workflows/docker-image.yml/badge.svg)
 ![Crates.io](https://img.shields.io/crates/d/quic-exfil?style=plastic)
-![Libraries.io dependency status for GitHub repo](https://img.shields.io/librariesio/github/thomasgruebl/quic-exfil?style=plastic)
+![GitHub Repo stars](https://img.shields.io/github/stars/thomasgruebl/quic-exfil?style=plastic)
+![GitHub forks](https://img.shields.io/github/forks/thomasgruebl/quic-exfil?style=plastic)
+![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/thomasgruebl/quic-exfil?style=plastic)
 ![GitHub last commit](https://img.shields.io/github/last-commit/thomasgruebl/quic-exfil?style=plastic)
-![GitHub](https://img.shields.io/github/license/thomasgruebl/quic-exfil?style=plastic)
-<a style="text-decoration: none" href="https://github.com/thomasgruebl/quic-exfil/stargazers">
-<img src="https://img.shields.io/github/stars/thomasgruebl/quic-exfil.svg?style=plastic" alt="Stars">
-</a>
-<a style="text-decoration: none" href="https://github.com/thomasgruebl/quic-exfil/fork">
-<img src="https://img.shields.io/github/forks/thomasgruebl/quic-exfil.svg?style=plastic" alt="Forks">
-</a>
-<a style="text-decoration: none" href="https://github.com/thomasgruebl/quic-exfil/issues">
-<img src="https://img.shields.io/github/issues/thomasgruebl/quic-exfil.svg?style=plastic" alt="Issues">
-</a>
-
-
+![GitHub License](https://img.shields.io/github/license/thomasgruebl/quic-exfil)
 
 <!-- TABLE OF CONTENTS -->
 <details open="open">
